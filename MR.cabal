@@ -1,0 +1,19 @@
+name:           MR
+version:        0.1
+cabal-version:  >= 1.2
+build-type:      Simple
+
+executable MR
+  
+  hs-source-dirs:  src
+  main-is:         Main.hs
+  build-depends:   base,
+                   binary,
+                   remote
+  other-modules:   Storage.Simple, Storage.Polymorphic, Storage.Messages, Types.Generic
+
+library
+  exposed-modules:  Storage.Simple, Storage.Polymorphic
+  hs-source-dirs:   src
+
+
