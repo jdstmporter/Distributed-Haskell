@@ -1,6 +1,6 @@
 module Main where
 
-import Storage.Simple
+import Storage
 import Remote
 
 initialProcess :: String -> ProcessM ()
@@ -39,4 +39,4 @@ doStuff myPid slavePid = do
 
 
 main::IO()
-main = remoteInit (Just "config") [Storage.Simple.__remoteCallMetaData] initialProcess
+main = remoteInit (Just "config") [Storage.__remoteCallMetaData] initialProcess

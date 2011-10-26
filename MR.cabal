@@ -3,17 +3,19 @@ version:        0.1
 cabal-version:  >= 1.2
 build-type:      Simple
 
+source-repository head
+  type:     git
+  location: git://github.com/jepst/CloudHaskell.git
+  tag:      1.6.1
+
 executable MR
   
   hs-source-dirs:  src
   main-is:         Main.hs
   build-depends:   base,
                    binary,
-                   remote
-  other-modules:   Storage.Simple, Storage.Polymorphic, Storage.Messages, Types.Generic
-
-library
-  exposed-modules:  Storage.Simple, Storage.Polymorphic
-  hs-source-dirs:   src
+                   remote,
+                   bytestring
+  
 
 
