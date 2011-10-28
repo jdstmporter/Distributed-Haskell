@@ -30,7 +30,7 @@ instance (Serializable a) => Binary (DataMessage a)  where
                                 return (Update kv)
 
 
-getData :: [ByteString] -> [ByteString] -> ProcessM ()
+getData :: (Serializable a,Serializable b) => [a] -> [b] -> ProcessM ()
 getData ins outs = do
         (pid,m) <- expect
         case m of
@@ -61,7 +61,7 @@ updateStore myPid slavePid x = do
         
         
 storageServer :: ProcessM ()
-storageServer = getData [] []
+storageServer = getData (empty ("x"::String)) (empty ("x"::String))
         
 
 $( remotable ['storageServer] )
