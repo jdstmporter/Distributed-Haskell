@@ -30,7 +30,7 @@ doStuff myPid slavePid = do
         say("Putting more stuff")
         putToStore myPid slavePid ([(6,"a"),(7,"b"),(8,"c"),(9,"d"),(0,"e")]::[(Int,String)])
         say("Swapping stuff")
-        updateStore myPid slavePid (1::Int)
+        updateStore myPid slavePid (1::Int,"x")
         say("Getting stuff")
         xs <- (getFromStore myPid slavePid)::ProcessM [(Int,String)]
         say("Got "++show xs)

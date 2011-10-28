@@ -11,20 +11,22 @@ import Data.ByteString.Lazy (ByteString)
 import Control.Applicative ((<$>))
 
 
-data (Serializable a) => DataMessage a = Put a |  Get | Update a
+data (Serializable a) => DataMessage a = Put a |  Get a | Update a
         deriving(Typeable) 
         
 instance (Serializable a) => Binary (DataMessage a)  where
         put (Put kv) = put 'P' >> put kv
         put (Update kv) = put 'U'>> put kv
-        put Get = put 'G'
+        put (Get kv) = put 'G' >> put kv
         get = do
                 h <- get :: Get Char
                 case h of
                         'P' -> do
                                 kv <- get
                                 return (Put kv)
-                        'G' -> return Get
+                        'G' -> do
+                                kv <- get
+                                return (Get kv)
                         'U' -> do
                                 kv <- get
                                 return (Update kv)
@@ -35,20 +37,23 @@ getData ins outs = do
         (pid,m) <- expect
         case m of
                 Put x -> do
+                        say ("Doing Put from " ++ show pid)
                         getData outs $ ins ++ x
-                Get -> do
+                Get x -> do
+                        say ("Doing Get to " ++ show pid)
                         send pid outs
                         getData ins outs
                 Update x -> do
+                        say ("Doing Update from " ++ show pid)
                         getData (tail x) ins
 
 putToStore :: (Serializable a) => ProcessId -> ProcessId -> [a] -> ProcessM()
 putToStore myPid slavePid xs = do
         send slavePid (myPid,Put xs)
         
-getFromStore :: (Serializable a) => ProcessId -> ProcessId -> ProcessM [a]
-getFromStore myPid slavePid= do
-        send slavePid (myPid,Get::DataMessage ())
+getFromStore :: (Serializable a) => ProcessId -> ProcessId -> a -> ProcessM [a]
+getFromStore myPid slavePid x = do
+        send slavePid (myPid,Get x)
         kv <- expect
         return kv
 
@@ -61,7 +66,7 @@ updateStore myPid slavePid x = do
         
         
 storageServer :: ProcessM ()
-storageServer = getData (empty ("x"::String)) (empty ("x"::String))
+storageServer = getData (empty (1::Int,"x")) (empty (1::Int,"x"))
         
 
 $( remotable ['storageServer] )
