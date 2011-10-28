@@ -40,7 +40,7 @@ getData ins outs = do
                         send pid outs
                         getData ins outs
                 Update x -> do
-                        getData x ins
+                        getData (tail x) ins
 
 putToStore :: (Serializable a) => ProcessId -> ProcessId -> [a] -> ProcessM()
 putToStore myPid slavePid xs = do
@@ -57,7 +57,7 @@ empty x = []
 
 updateStore :: (Serializable a) => ProcessId -> ProcessId -> a -> ProcessM()
 updateStore myPid slavePid x = do
-        send slavePid (myPid,Update (empty x))
+        send slavePid (myPid,Update [x])
         
         
 storageServer :: ProcessM ()
