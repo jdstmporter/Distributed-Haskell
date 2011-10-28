@@ -16,6 +16,7 @@ executable MR
                    binary,
                    remote,
                    bytestring
+  other-modules:   StoragePoly
   
 
 

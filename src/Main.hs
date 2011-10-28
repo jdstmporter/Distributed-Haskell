@@ -1,6 +1,6 @@
 module Main where
 
-import Storage
+import StoragePoly
 import Remote
 
 initialProcess :: String -> ProcessM ()
@@ -30,7 +30,7 @@ doStuff myPid slavePid = do
         say("Putting more stuff")
         putToStore myPid slavePid ([(6,"a"),(7,"b"),(8,"c"),(9,"d"),(0,"e")]::[(Int,String)])
         say("Swapping stuff")
-        updateStore myPid slavePid
+        updateStore myPid slavePid (1::Int)
         say("Getting stuff")
         xs <- (getFromStore myPid slavePid)::ProcessM [(Int,String)]
         say("Got "++show xs)
@@ -39,4 +39,4 @@ doStuff myPid slavePid = do
 
 
 main::IO()
-main = remoteInit (Just "config") [Storage.__remoteCallMetaData] initialProcess
+main = remoteInit (Just "config") [StoragePoly.__remoteCallMetaData] initialProcess

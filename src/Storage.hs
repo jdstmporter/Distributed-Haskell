@@ -12,7 +12,7 @@ import Data.ByteString.Lazy (ByteString)
 import Control.Applicative ((<$>))
 
 
-data DataMessage = Put [ByteString] |  Get | Update | New [ByteString]
+data DataMessage = Put [ByteString] |  Get | Update
         deriving(Typeable) 
         
 instance Binary DataMessage  where
