@@ -2,6 +2,8 @@ name:           MR
 version:        0.1
 cabal-version:  >= 1.2
 build-type:      Simple
+data-files:     config_master, config_storage
+data-dir:       src
 
 executable MR
   
@@ -10,8 +12,9 @@ executable MR
   build-depends:   base,
                    binary,
                    remote,
-                   bytestring
-  other-modules:   StoragePoly
+                   bytestring,
+                   directory
+  other-modules:   Storage
   
 
 

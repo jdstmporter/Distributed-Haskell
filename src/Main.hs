@@ -1,6 +1,9 @@
 module Main where
 
-import StoragePoly
+import System.Environment (getArgs)
+import System.Directory (copyFile)
+import Paths_MR
+import Storage
 import Remote
 
 initialProcess :: String -> ProcessM ()
@@ -30,13 +33,24 @@ doStuff myPid slavePid = do
         say("Putting more stuff")
         putToStore myPid slavePid ([(6,"a"),(7,"b"),(8,"c"),(9,"d"),(0,"e")]::[(Int,String)])
         say("Swapping stuff")
-        updateStore myPid slavePid (1::Int,"x")
+        updateStore myPid slavePid 
         say("Getting stuff")
-        xs <- (getFromStore myPid slavePid (1::Int,"x"))::ProcessM [(Int,String)]
+        xs <- (getFromStore myPid slavePid)::ProcessM [(Int,String)]
         say("Got "++show xs)
         return ()
         
 
 
 main::IO()
-main = remoteInit (Just "config") [StoragePoly.__remoteCallMetaData] initialProcess
+main = do
+        args <- getArgs
+        case (head args) of
+                "-m" -> init "config_master"
+                "-s" -> init "config_storage"
+                _    -> putStrLn "Option must be -m or -s"
+        where
+                init confFile = do
+                        conf <- getDataFileName confFile
+                        putStrLn (show conf)
+                        copyFile conf ".config"
+                        remoteInit (Just ".config") [Storage.__remoteCallMetaData] initialProcess

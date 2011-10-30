@@ -1,6 +1,6 @@
 cfgRole MASTER
         cfgHostName imac.local
-        cfgKnownHosts imac.local debian.local
+        cfgKnownHosts imac.local joker.local
 
 
 
