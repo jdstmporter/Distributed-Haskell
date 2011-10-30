@@ -28,15 +28,15 @@ initialProcess _ = error "Role must be STORAGE or MASTER"
 
 doStuff :: ProcessId -> ProcessId -> ProcessM()
 doStuff myPid slavePid = do
-        say("Putting stuff")
+        say $ "Putting data to PID " ++ show slavePid
         putToStore myPid slavePid ([(1,"a"),(2,"b"),(3,"c"),(4,"d"),(5,"e")]::[(Int,String)])
-        say("Putting more stuff")
+        say $ "Putting data to PID " ++ show slavePid
         putToStore myPid slavePid ([(6,"a"),(7,"b"),(8,"c"),(9,"d"),(0,"e")]::[(Int,String)])
-        say("Swapping stuff")
+        say $ "Exchanging on PID " ++ show slavePid
         updateStore myPid slavePid 
-        say("Getting stuff")
+        say $ "Pulling from PID " ++ show slavePid
         xs <- (getFromStore myPid slavePid)::ProcessM [(Int,String)]
-        say("Got "++show xs)
+        say $ "Got "++show xs
         return ()
         
 
