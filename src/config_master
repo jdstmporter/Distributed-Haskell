@@ -1,6 +1,6 @@
 cfgRole MASTER
-        cfgHostName batman.local
-        cfgKnownHosts batman.local joker.local
+        cfgHostName imac.local
+        cfgKnownHosts imac.local joker.local
 
 
 
