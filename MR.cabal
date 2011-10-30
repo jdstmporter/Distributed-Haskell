@@ -16,5 +16,7 @@ executable MR
                    directory
   other-modules:   Storage
   
-
+library
+  hs-source-dirs:  src
+  exposed-modules: Storage
 

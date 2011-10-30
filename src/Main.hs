@@ -6,51 +6,59 @@ import Paths_MR
 import Storage
 import Remote
 
-initialProcess :: String -> ProcessM ()
+
+-- | Simple interaction with server; put two slugs of data then get them back
+doStuff :: ProcessId ->                 -- ^ client's unique identifier 
+        ProcessId ->                    -- ^ server's unique identifier
+        ProcessM()                      -- ^ null marker
+doStuff myPid slavePid = do
+        say $ "Putting data to PID " ++ show slavePid
+        pushToStore myPid slavePid ([(1,"a"),(2,"b"),(3,"c"),(4,"d"),(5,"e")]::[(Int,String)])
+        say $ "Putting data to PID " ++ show slavePid
+        pushToStore myPid slavePid ([(6,"a"),(7,"b"),(8,"c"),(9,"d"),(0,"e")]::[(Int,String)])
+        say $ "Exchanging on PID " ++ show slavePid
+        exchangeStore myPid slavePid 
+        say $ "Pulling from PID " ++ show slavePid
+        xs <- (pullFromStore myPid slavePid)::ProcessM [(Int,String)]
+        say $ "Got "++show xs
+        return ()
+
+-- | run the CloudHaskell process
+initialProcess :: String ->     -- ^ the mode in which it runs, taken from config file 
+        ProcessM ()
 initialProcess "STORAGE" =
   receiveWait []
 
 initialProcess "MASTER" = do
-        peers <- getPeers
-        mypid <- getSelfPid
-        let storage = findPeerByRole peers "STORAGE"
+        peers <- getPeers                                               -- CloudHaskell function; gets list of machines from config file
+        mypid <- getSelfPid                                             -- gets my unique identifier
+        let storage = findPeerByRole peers "STORAGE"                    -- returns those machines with the role "STORAGE"
         mapM_ (\ nid  -> say("STORAGE : "++show nid)) storage
-        pid <- spawn (head storage) (storageServer__closure) 
-        doStuff mypid pid       
+        case storage of
+                [] -> error "No storage server is running"
+                _  -> do
+                pid <- spawn (head storage) (storageServer__closure)    -- get a unique identifier for the storage server 
+                doStuff mypid pid                                       -- interact    
         return ()
      
-
 initialProcess _ = error "Role must be STORAGE or MASTER"
 
-
+usage :: IO()
+usage = putStrLn "Usage:\n\tMR -c : run as client\n\tMR -s : run as server"
         
-
-
-doStuff :: ProcessId -> ProcessId -> ProcessM()
-doStuff myPid slavePid = do
-        say $ "Putting data to PID " ++ show slavePid
-        putToStore myPid slavePid ([(1,"a"),(2,"b"),(3,"c"),(4,"d"),(5,"e")]::[(Int,String)])
-        say $ "Putting data to PID " ++ show slavePid
-        putToStore myPid slavePid ([(6,"a"),(7,"b"),(8,"c"),(9,"d"),(0,"e")]::[(Int,String)])
-        say $ "Exchanging on PID " ++ show slavePid
-        updateStore myPid slavePid 
-        say $ "Pulling from PID " ++ show slavePid
-        xs <- (getFromStore myPid slavePid)::ProcessM [(Int,String)]
-        say $ "Got "++show xs
-        return ()
-        
-
-
 main::IO()
 main = do
         args <- getArgs
-        case (head args) of
-                "-m" -> init "config_master"
-                "-s" -> init "config_storage"
-                _    -> putStrLn "Option must be -m or -s"
-        where
-                init confFile = do
-                        conf <- getDataFileName confFile
-                        putStrLn $ "Using config file " ++ show conf
-                        copyFile conf ".config"
-                        remoteInit (Just ".config") [Storage.__remoteCallMetaData] initialProcess
+        case args of
+                [] -> usage
+                _ -> do
+                case (head args) of
+                        "-c" -> init "config_master"
+                        "-s" -> init "config_storage"
+                        _    -> usage 
+                where
+                        init confFile = do
+                                conf <- getDataFileName confFile
+                                putStrLn $ "Using config file " ++ show conf
+                                copyFile conf ".config"                         -- get the right config file in the right place
+                                remoteInit (Just ".config") [Storage.__remoteCallMetaData] initialProcess
