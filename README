@@ -1,0 +1,38 @@
+SIMPLE CLOUDHASKELL STORAGE SERVICE
+===================================
+
+This code is distributed under the terms of the GPL, so use it, change it, etc but
+please acknowledge its origin.
+
+Installation
+============
+
+(1) Download CloudHaskell from git://github.com/jepst/CloudHaskell.git
+(2) Install it with 'cabal install' in its top level directory
+(3) Download the storage server code from git://github.com/Julianporter/Distributed-Haskell.git 
+    onto two machines
+(4) Modify the two files 'config_master' and 'config_storage' to refer to your two machines' 
+    names.  I have used the names 'joker.local' for the server and 'batman.local' for the client
+(4) On each machine install the application with 'cabal install' in its top level directory
+
+Testing
+=======
+
+(1) On the server machine invoke 'MR -s'
+(2) On the client machine invoke 'MR -c' (if you do this first, you will get an exception
+    complaining that no server is running)
+
+You will see debugging output on both machines.  The client sends two slugs, each of five items
+of type (Int,String), to the server, does an exchange and reads them back.
+
+Generally
+=========
+
+The server and client API are in Storage.hs, and are fully documented.  The client programme
+in Main.hs gives a good idea of simple CloudHaskell.
+
+Further Reading
+===============
+
+http://jpembeddedsolutions.wordpress.com/
+
