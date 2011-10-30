@@ -34,7 +34,7 @@ getData ins outs = do
         (pid,m) <- expect
         case m of
                 Push x -> do
-                        say $ "PID " ++ show pid ++ " adding data " ++ show x
+                        say $ "PID " ++ show pid ++ " adding data"
                         getData (ins ++ x) outs
                 Pull -> do
                         say $ "PID " ++ show pid ++ " getting data"

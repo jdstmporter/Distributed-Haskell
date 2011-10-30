@@ -51,6 +51,6 @@ main = do
         where
                 init confFile = do
                         conf <- getDataFileName confFile
-                        putStrLn (show conf)
+                        putStrLn $ "Using config file " ++ show conf
                         copyFile conf ".config"
                         remoteInit (Just ".config") [Storage.__remoteCallMetaData] initialProcess
