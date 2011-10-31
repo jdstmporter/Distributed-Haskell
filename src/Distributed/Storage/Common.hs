@@ -1,7 +1,6 @@
-{-# LANGUAGE TemplateHaskell,DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 
--- | Common types for message passing by distributed stores, and a generic API to be provided by a future version
---   of the service.
+-- | Common type for message passing by distributed stores.  Used only by store implementations.
 module Distributed.Storage.Common where
 
 import Data.ByteString.Lazy (ByteString)
@@ -30,24 +29,3 @@ instance Binary DataMessage  where
                         'G' -> return Pull
                         'U' -> return Exchange
                         
--- | The client API for a datastore
-class DataStore d where
-        -- | Client API function to append a list of type @['Data.ByteString.Lazy.ByteString']@ to the outputs list in the store.
-        push :: (Binary a) => d                          -- ^ the datastore
-                -> ProcessId                             -- ^ client's unique identifier
-                -> ProcessId                             -- ^ server's unique identifier
-                -> [a]                                   -- ^ the data to send
-                -> ProcessM()                            -- ^ null marker 
-                
-        -- | Client API function to pull the inputs list of type @['Data.ByteString.Lazy.ByteString']@ from the store.        
-        pull :: (Binary a) => d                          -- ^ the datastore
-                -> ProcessId                             -- ^ client's unique identifier
-                -> ProcessId                             -- ^ server's unique identifier
-                -> ProcessM [a]                          -- ^ data from server wrapped in 'ProcessM'
-                
-        -- | Client API function to do exchange: replaces the inputs list with the outputs list and
-        --   initialises the inputs list to @[]@ 
-        exchange :: d                                   -- ^ the datastore 
-                -> ProcessId                            -- ^ client's unique identifier
-                -> ProcessId                            -- ^ server's unique identifier 
-                -> ProcessM()                           -- ^ null marker
