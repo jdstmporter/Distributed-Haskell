@@ -14,9 +14,9 @@ executable MR
                    remote,
                    bytestring,
                    directory
-  other-modules:   Storage
-  
+  other-modules:   Distributed.Storage.Common
+    
 library
   hs-source-dirs:  src
-  exposed-modules: Storage
-
+  exposed-modules: Distributed.Storage.Simple,Distributed.Storage.Common
+  

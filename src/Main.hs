@@ -3,7 +3,7 @@ module Main where
 import System.Environment (getArgs)
 import System.Directory (copyFile)
 import Paths_MR
-import Storage
+import Distributed.Storage.Simple
 import Remote
 
 
@@ -61,4 +61,4 @@ main = do
                                 conf <- getDataFileName confFile
                                 putStrLn $ "Using config file " ++ show conf
                                 copyFile conf ".config"                         -- get the right config file in the right place
-                                remoteInit (Just ".config") [Storage.__remoteCallMetaData] initialProcess
+                                remoteInit (Just ".config") [Distributed.Storage.Simple.__remoteCallMetaData] initialProcess
