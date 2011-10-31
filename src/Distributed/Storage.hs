@@ -4,13 +4,15 @@ module Distributed.Storage where
 
 
 import Remote (ProcessM)
+import Remote.Closure(Closure)
 import Data.Binary(Binary)
 
 
--- | The API for a datastore
+-- | The client API for a datastore
 class DataStore d where
         -- | Simple method to discover a store
-        store :: ProcessM d                              -- ^ the datastore wrapped in 'Remote.ProcessM'
+        store :: String                                  -- ^ the CloudHaskell role identifier for the server
+                -> ProcessM d                            -- ^ the datastore wrapped in 'Remote.ProcessM'
         
         -- | Client API function to append a list of type @['Data.ByteString.Lazy.ByteString']@ to the outputs list in the store.
         push :: (Binary a) => d                          -- ^ the datastore
@@ -25,3 +27,16 @@ class DataStore d where
         --   initialises the inputs list to @[]@ 
         exchange :: d                                   -- ^ the datastore 
                 -> ProcessM()                           -- ^ null marker
+
+-- | The management API for a datastore
+class DataStoreServer d where
+        -- | start the server
+        start :: d                                      -- ^ the server
+        
+        -- | stop the server
+        stop :: d                                       -- ^ the server
+                -> ProcessM ()                          -- ^ nil marker
+        
+        -- | return the 'Remote.Closure.Closure' that CloudHaskell uses to identify the server        
+        closure :: d                                    -- ^ the server
+                -> Closure (ProcessM ())                -- ^ its server

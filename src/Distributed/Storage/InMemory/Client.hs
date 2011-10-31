@@ -17,20 +17,15 @@ import Distributed.Storage.InMemory.Server(storageServer__closure)
 -- | The datastore type - just the 'Remote.ProcessId' for the client and the server.
 data InMemory = In ProcessId ProcessId
 
--- | The instance.  Some stuff from @Remote@ to find the client and server 'Remote.ProcessId', and then
---   the methods themselves, sending the messages from 'Distributed.Storage.Common' to the server and
+-- | The instance of 'Distributed.Storage.DataStore'.  
+--   Some stuff from @Remote@ to find the client and server 'Remote.ProcessId', and then
+--   the methods themselves, sending the messages from 'Distributed.Storage.Common.DataMessage' to the server and
 --   serialising / deserialising data.
 instance DataStore InMemory where
-        store = do
-                peers <- getPeers                                                       -- CloudHaskell function; gets list of machines from config file
+        store role = do
                 mypid <- getSelfPid                                                     -- gets my unique identifier
-                let storage = findPeerByRole peers "STORAGE"                            -- returns those machines with the role "STORAGE"
-                -- mapM_ (\ nid  -> say("STORAGE : "++show nid)) storage
-                case storage of
-                        [] -> error "No storage server is running"
-                        _  -> do
-                                pid <- spawn (head storage) (storageServer__closure)    -- get a unique identifier for the storage server 
-                                return $ In mypid pid
+                spid <- getStoragePID role storageServer__closure
+                return $ In mypid spid
         push (In mypid spid) x = do
                 send spid (mypid,Push (encode <$> x))                                   -- send a message
         pull (In mypid spid) = do
