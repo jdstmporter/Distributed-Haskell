@@ -8,7 +8,6 @@ import Data.Binary (Binary,Get,Put,get,put)
 import Data.Typeable
 
 
-
 -- | Basic type that is used to pass messages between client and server.  Messages
 --   either push some data, request a pull, or request an exchange.  Derives 'Data.Typeable.Typeable'
 --   as part of making it 'Remote.Serializable'.

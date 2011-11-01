@@ -15,10 +15,10 @@ executable MR
                    bytestring,
                    directory,
                    template-haskell
-  other-modules:   Distributed.Storage,Distributed.Storage.Common,Distributed.Storage.InMemory
+  other-modules:   Distributed.Storage,Distributed.Storage.Common,Distributed.Storage.InMemory,Distributed
     
 library
   hs-source-dirs:  src
-  exposed-modules: Distributed.Storage,Distributed.Storage.Common,Distributed.Storage.InMemory
-  other-modules:   Distributed.Storage.InMemory.Server
+  exposed-modules: Distributed,Distributed.Storage,Distributed.Storage.InMemory
+  other-modules:   Distributed.Storage.InMemory.Server,Distributed.Storage.Common
   

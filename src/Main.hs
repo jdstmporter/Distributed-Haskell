@@ -4,13 +4,12 @@ import System.Environment (getArgs)
 import System.Directory (copyFile)
 import Paths_MR
 import Distributed.Storage.InMemory
-import Distributed.Storage
 import Remote
 
 
 
 -- | Simple interaction with server; put two slugs of data then get them back
-doStuff :: DataStore ->                 -- ^ the datastore
+doStuff :: Service ->                 -- ^ the datastore
         ProcessM()                      -- ^ null marker
 doStuff d = do
         say $ "Putting data to PID " -- ++ show slavePid
@@ -26,23 +25,21 @@ doStuff d = do
 
 -- | run the CloudHaskell process
 initialProcess :: String ->     -- ^ The CloudHaskell role I am running in
-        ProcessM ()
-initialProcess "STORAGE" =
-  receiveWait []
-
+        ProcessM ()             -- ^ Nill return
+initialProcess "STORAGE" = receiveWait []
 initialProcess "MASTER" = do
         let s = getInMemoryServer 
-        d <- store s "STORAGE"
+        d <- service s "STORAGE"
         doStuff d
         return ()
-     
 initialProcess _ = error "Role must be STORAGE or MASTER"
 
 
-
+-- | Print usage string
 usage :: IO()
 usage = putStrLn "Usage:\n\tMR -c : run as client\n\tMR -s : run as server"
-        
+
+-- | Main method.  Accepts command-line argument "-s" for server and "-c" for client.         
 main::IO()
 main = do
         args <- getArgs
