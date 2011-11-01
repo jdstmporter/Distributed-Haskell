@@ -6,8 +6,7 @@ module Distributed.Storage.Common where
 import Data.ByteString.Lazy (ByteString)
 import Data.Binary (Binary,Get,Put,get,put)
 import Data.Typeable
-import Remote (ProcessId,ProcessM,Serializable,getPeers,getSelfPid,findPeerByRole,spawn)
-import Remote.Closure
+
 
 
 -- | Basic type that is used to pass messages between client and server.  Messages
@@ -30,14 +29,6 @@ instance Binary DataMessage  where
                         'G' -> return Pull
                         'U' -> return Exchange
                         
-getStoragePID :: String -> Closure (ProcessM ()) -> ProcessM ProcessId
-getStoragePID role closure = do
-        peers <- getPeers                                                       -- CloudHaskell function; gets list of machines from config file
-        mypid <- getSelfPid                                                     -- gets my unique identifier
-        let storage = findPeerByRole peers role                                 -- returns those machines with the role "STORAGE"
-        -- mapM_ (\ nid  -> say("STORAGE : "++show nid)) storage
-        case storage of
-                [] -> error "No storage server is running"
-                _  -> do
-                        pid <- spawn (head storage) (closure)    -- get a unique identifier for the storage server 
-                        return pid
+
+
+

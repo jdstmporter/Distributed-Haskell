@@ -3,15 +3,14 @@ module Main where
 import System.Environment (getArgs)
 import System.Directory (copyFile)
 import Paths_MR
-import Distributed.Storage.InMemory.Client
-import Distributed.Storage.InMemory.Server
+import Distributed.Storage.InMemory
 import Distributed.Storage
 import Remote
 
 
 
 -- | Simple interaction with server; put two slugs of data then get them back
-doStuff :: InMemory ->                  -- ^ the datastore
+doStuff :: DataStore ->                 -- ^ the datastore
         ProcessM()                      -- ^ null marker
 doStuff d = do
         say $ "Putting data to PID " -- ++ show slavePid
@@ -26,13 +25,14 @@ doStuff d = do
         return ()
 
 -- | run the CloudHaskell process
-initialProcess :: String ->     -- ^ the mode in which it runs, taken from config file 
+initialProcess :: String ->     -- ^ The CloudHaskell role I am running in
         ProcessM ()
 initialProcess "STORAGE" =
   receiveWait []
 
 initialProcess "MASTER" = do
-        d <- store "STORAGE"
+        let s = getInMemoryServer 
+        d <- store s "STORAGE"
         doStuff d
         return ()
      
@@ -58,4 +58,5 @@ main = do
                                 conf <- getDataFileName confFile
                                 putStrLn $ "Using config file " ++ show conf
                                 copyFile conf ".config"                         -- get the right config file in the right place
-                                remoteInit (Just ".config") [Distributed.Storage.InMemory.Server.__remoteCallMetaData] initialProcess
+                                let s = getInMemoryServer
+                                remoteInit (Just ".config") [metadata s] initialProcess

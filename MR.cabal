@@ -13,11 +13,12 @@ executable MR
                    binary,
                    remote,
                    bytestring,
-                   directory
-  other-modules:   Distributed.Storage.Common, Distributed.Storage.InMemory.Client, Distributed.Storage.InMemory.Server
+                   directory,
+                   template-haskell
+  other-modules:   Distributed.Storage,Distributed.Storage.Common,Distributed.Storage.InMemory
     
 library
   hs-source-dirs:  src
-  exposed-modules: Distributed.Storage, Distributed.Storage.Common,Distributed.Storage.InMemory.Client, Distributed.Storage.InMemory.Server
-  other-modules:   Distributed.Storage.Simple
+  exposed-modules: Distributed.Storage,Distributed.Storage.Common,Distributed.Storage.InMemory
+  other-modules:   Distributed.Storage.InMemory.Server
   
